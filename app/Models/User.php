@@ -45,4 +45,10 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function course()
+    {
+        return $this->belongsToMany(Course::class, 'course_students', 'user_id', 'course_id');
+    }
+
 }
