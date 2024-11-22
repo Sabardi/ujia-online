@@ -9,17 +9,15 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class CourseQuestion extends Model
 {
     use HasFactory, SoftDeletes;
-    
     protected $guarded = [
         'id',
     ];
-    
     public function course()
     {
         return $this->belongsTo(Course::class, 'course_id');
     }
     public function answers()
     {
-        return $this->hasMany(CourseAnswer::class, 'question_id', 'id');
+        return $this->hasMany(CourseAnswer::class, 'course_question_id', 'id');
     }
 }

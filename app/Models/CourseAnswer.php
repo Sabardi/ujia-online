@@ -13,5 +13,5 @@ class CourseAnswer extends Model
     protected $guarded = [
         'id',
     ];
-    
+
 }

@@ -17,7 +17,8 @@ class CourseController extends Controller
      */
     public function index()
     {
-        return view('admin.courses.index');
+        $courses = Course::orderBy('id', 'desc')->get();
+        return view('admin.courses.index', compact('courses'));
     }
 
     /**
@@ -72,28 +73,28 @@ class CourseController extends Controller
             'category_id' => 'required|integer',
             'cover' => 'required|image|mimes:png,jpg,svg',
         ]);
-        
+
         DB::beginTransaction();
-    
+
         try {
             // Simpan file cover jika ada
             if ($request->hasFile('cover')) {
                 $coverPath = $request->file('cover')->store('product_covers', 'public');
                 $validated['cover'] = $coverPath;
             }
-            
+
             // Buat slug dari nama
             $validated['slug'] = Str::slug($request->name);
-            
+
             // Buat course baru
             Course::create($validated);
-             
+
             DB::commit();
-            
+
             return redirect()->route('dashboard.courses.index')->with('success', 'Course created successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             // Mengelola kesalahan dengan pesan yang lebih informatif
             return redirect()->back()->withErrors([
                 'system_error' => 'System error! ' . $e->getMessage(),
@@ -106,7 +107,10 @@ class CourseController extends Controller
      */
     public function show(Course $course)
     {
-        //
+        // return $course;
+        $student = $course->students()->orderBy('id', 'desc')->get();
+        $questions = $course->questions()->orderBy('id', 'desc')->get();
+        return view('admin.courses.manage', compact('course', 'student', 'questions'));
     }
 
     /**
@@ -114,7 +118,8 @@ class CourseController extends Controller
      */
     public function edit(Course $course)
     {
-        //
+        $categories = Category::all();
+        return view('admin.courses.edit', compact('course', 'categories'));
     }
 
     /**
@@ -122,7 +127,39 @@ class CourseController extends Controller
      */
     public function update(Request $request, Course $course)
     {
-        //
+        // return $request->all();
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'category_id' => 'required|integer',
+            'cover' => 'sometimes|image|mimes:png,jpg,svg',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            // Simpan file cover jika ada
+            if ($request->hasFile('cover')) {
+                $coverPath = $request->file('cover')->store('product_covers', 'public');
+                $validated['cover'] = $coverPath;
+            }
+
+            // Buat slug dari nama
+            $validated['slug'] = Str::slug($request->name);
+
+            // Buat course baru
+            $course->update($validated);
+
+            DB::commit();
+
+            return redirect()->route('dashboard.courses.index')->with('success', 'Course created successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            // Mengelola kesalahan dengan pesan yang lebih informatif
+            return redirect()->back()->withErrors([
+                'system_error' => 'System error! ' . $e->getMessage(),
+            ]);
+        }
     }
 
     /**
@@ -130,6 +167,16 @@ class CourseController extends Controller
      */
     public function destroy(Course $course)
     {
-        //
+        try {
+            $course->delete();
+            return redirect()->route('dashboard.courses.index')->with('success', 'Course deleted successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            // Mengelola kesalahan dengan pesan yang lebih informatif
+            return redirect()->back()->withErrors([
+                'system_error' => 'System error! ' . $e->getMessage(),
+            ]);
+        }
     }
 }
