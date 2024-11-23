@@ -103,13 +103,16 @@
                         </a>
                     </li>
                     <li>
-                        <a href="signin.html"
-                            class="p-[10px_16px] flex items-center gap-[14px] rounded-full h-11 transition-all duration-300 hover:bg-[#2B82FE]">
-                            <div>
-                                <img src="{{ asset('assets') }}/images/icons/security-safe.svg" alt="icon">
-                            </div>
-                            <p class="font-semibold transition-all duration-300 hover:text-white">Logout</p>
-                        </a>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit"
+                                class="p-[10px_16px] flex items-center gap-[14px] rounded-full h-11 transition-all duration-300 hover:bg-[#2B82FE]">
+                                <div>
+                                    <img src="{{ asset('assets') }}/images/icons/security-safe.svg" alt="icon">
+                                </div>
+                                <p class="font-semibold transition-all duration-300 hover:text-white">Logout</p>
+                            </button>
+                        </form>
                     </li>
                 </ul>
             </div>
@@ -163,7 +166,8 @@
                 <div class="breadcrumb flex items-center gap-[30px]">
                     <a href="#" class="text-[#7F8190] last:text-[#0A090B] last:font-semibold">Home</a>
                     <span class="text-[#7F8190] last:text-[#0A090B]">/</span>
-                    <a href="index.html" class="text-[#7F8190] last:text-[#0A090B] last:font-semibold">Manage
+                    <a href="{{ route('dashboard.courses.index') }}"
+                        class="text-[#7F8190] last:text-[#0A090B] last:font-semibold">Manage
                         Courses</a>
                     <span class="text-[#7F8190] last:text-[#0A090B]">/</span>
                     <a href="#" class="text-[#7F8190] last:text-[#0A090B] last:font-semibold ">Course
@@ -207,7 +211,8 @@
                     </a>
                     <div
                         class="dropdown-menu absolute hidden right-0 top-[66px] w-[270px] flex flex-col gap-4 p-5 border border-[#EEEEEE] bg-white rounded-[18px] transition-all duration-300 shadow-[0_10px_16px_0_#0A090B0D]">
-                        <a href="{{ route('dashboard.course.course.student.create', $course->id ) }}" class="flex gap-[10px] items-center">
+                        <a href="{{ route('dashboard.course.course.student.create', $course->id) }}"
+                            class="flex gap-[10px] items-center">
                             <div class="w-5 h-5">
                                 <img src="{{ asset('assets') }}/images/icons/profile-2user-outline.svg"
                                     alt="icon">
@@ -266,25 +271,29 @@
                             <p class="text-xl font-bold">New Question</p>
                         </div>
                     </a>
-                    @forelse ( $questions as $question )
-                    <div class="question-card w-full flex items-center justify-between p-4 border border-[#EEEEEE] rounded-[20px]">
-                        <div class="flex flex-col gap-[6px]">
-                            <p class="text-[#7F8190]">Question</p>
-                            <p class="text-xl font-bold">{{ $question->question }}</p>
+                    @forelse ($questions as $question)
+                        <div
+                            class="question-card w-full flex items-center justify-between p-4 border border-[#EEEEEE] rounded-[20px]">
+                            <div class="flex flex-col gap-[6px]">
+                                <p class="text-[#7F8190]">Question</p>
+                                <p class="text-xl font-bold">{{ $question->question }}</p>
+                            </div>
+                            <div class="flex items-center gap-[14px]">
+                                <a href="{{ route('dashboard.course_question.edit', $question) }}"
+                                    class="bg-[#0A090B] p-[14px_30px] rounded-full text-white font-semibold">Edit</a>
+                                <form action="{{ route('dashboard.course_question.destroy', $question) }}"
+                                    method="POST">
+                                    @csrf
+                                    @method('delete')
+                                    <button
+                                        class="w-[52px] h-[52px] flex shrink-0 items-center justify-center rounded-full bg-[#FD445E]">
+                                        <img src="{{ asset('assets') }}/images/icons/trash.svg" alt="icon">
+                                    </button>
+                                </form>
+                            </div>
                         </div>
-                        <div class="flex items-center gap-[14px]">
-                            <a href="{{ route('dashboard.course_question.edit', $question ) }}" class="bg-[#0A090B] p-[14px_30px] rounded-full text-white font-semibold">Edit</a>
-                            <form action="{{ route('dashboard.course_question.destroy', $question) }}" method="POST">
-                                @csrf
-                                @method('delete')
-                                <button class="w-[52px] h-[52px] flex shrink-0 items-center justify-center rounded-full bg-[#FD445E]">
-                                    <img src="{{ asset('assets') }}/images/icons/trash.svg" alt="icon">
-                                </button>
-                            </form>
-                        </div>
-                    </div>
                     @empty
-                    <p class="text-[#7F8190]">No Question</p>
+                        <p class="text-[#7F8190]">No Question</p>
                     @endforelse
                 </div>
             </div>

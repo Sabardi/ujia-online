@@ -196,7 +196,22 @@
                     </div>
                 </div>
             </div>
-            <form action="" method="post" id="add-question" class="mx-[70px] mt-[30px] flex flex-col gap-5">
+
+            @if ($errors->any())
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li class="p-4 mb-4 bg-red-800 rounded text-white-800">{{ $error }}</li>
+                @endforeach
+            </ul>
+        @endif
+
+        @if (session('success'))
+            <div class="p-4 mb-4 text-white bg-green-500 rounded">
+                {{ session('success') }}
+            </div>
+        @endif
+
+            <form action="{{ route('dashboard.course.course.student.store', $course) }}" method="post" id="add-question" class="mx-[70px] mt-[30px] flex flex-col gap-5">
                 @csrf
                 <h2 class="text-2xl font-bold">Add New Student</h2>
                 <div class="flex flex-col gap-[10px]">
@@ -211,9 +226,9 @@
                             placeholder="Write student email address" name="email">
                     </div>
                 </div>
-                <a href="#"
+                <button type="submit"
                     class="w-[500px] h-[52px] p-[14px_20px] bg-[#6436F1] rounded-full font-bold text-white transition-all duration-300 hover:shadow-[0_4px_15px_0_#6436F14D] text-center">Add
-                    Student</a>
+                    Student</button>
             </form>
         </div>
     </section>

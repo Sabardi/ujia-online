@@ -163,7 +163,7 @@
                 <div class="breadcrumb flex items-center gap-[30px]">
                     <a href="#" class="text-[#7F8190] last:text-[#0A090B] last:font-semibold">Home</a>
                     <span class="text-[#7F8190] last:text-[#0A090B]">/</span>
-                    <a href="#" class="text-[#7F8190] last:text-[#0A090B] last:font-semibold">Manage Courses</a>
+                    <a href="{{ route('dashboard.courses.index') }}" class="text-[#7F8190] last:text-[#0A090B] last:font-semibold">Manage Courses</a>
                     <span class="text-[#7F8190] last:text-[#0A090B]">/</span>
                     <a href="#" class="text-[#7F8190] last:text-[#0A090B] last:font-semibold">Course Details</a>
                 </div>
@@ -199,20 +199,21 @@
             </div>
 
             @if ($errors->any())
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li class="p-4 mb-4 bg-red-800 rounded text-white-800">{{ $error }}</li>
-                @endforeach
-            </ul>
-        @endif
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li class="p-4 mb-4 bg-red-800 rounded text-white-800">{{ $error }}</li>
+                    @endforeach
+                </ul>
+            @endif
 
-        @if (session('success'))
-            <div class="p-4 mb-4 text-white bg-green-500 rounded">
-                {{ session('success') }}
-            </div>
-        @endif
+            @if (session('success'))
+                <div class="p-4 mb-4 text-white bg-green-500 rounded">
+                    {{ session('success') }}
+                </div>
+            @endif
 
-            <form action="{{ route('dashboard.course.create.question.store', $course->id) }}" method="POST" id="add-question" class="mx-[70px] mt-[30px] flex flex-col gap-5">
+            <form action="{{ route('dashboard.course.create.question.store', $course->id) }}" method="POST"
+                id="add-question" class="mx-[70px] mt-[30px] flex flex-col gap-5">
                 @csrf
                 <h2 class="text-2xl font-bold">Add New Question</h2>
                 <div class="flex flex-col gap-[10px]">
@@ -231,28 +232,27 @@
                 <div class="flex flex-col gap-[10px]">
                     <p class="font-semibold">Answers</p>
                     @for ($i = 1; $i <= 4; $i++)
-                    <div class="flex items-center gap-4">
-                        <div
-                            class="flex items-center w-[500px] h-[52px] p-[14px_16px] rounded-full border border-[#EEEEEE] focus-within:border-2 focus-within:border-[#0A090B]">
-                            <div class="mr-[14px] w-6 h-6 flex items-center justify-center overflow-hidden">
-                                <img src="{{ asset('assets') }}/images/icons/edit.svg"
-                                    class="object-contain w-full h-full" alt="icon">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="flex items-center w-[500px] h-[52px] p-[14px_16px] rounded-full border border-[#EEEEEE] focus-within:border-2 focus-within:border-[#0A090B]">
+                                <div class="mr-[14px] w-6 h-6 flex items-center justify-center overflow-hidden">
+                                    <img src="{{ asset('assets') }}/images/icons/edit.svg"
+                                        class="object-contain w-full h-full" alt="icon">
+                                </div>
+                                <input type="text"
+                                    class="font-semibold placeholder:text-[#7F8190] placeholder:font-normal w-full outline-none"
+                                    placeholder="Write better answer option" name="answer[]">
                             </div>
-                            <input type="text"
-                                class="font-semibold placeholder:text-[#7F8190] placeholder:font-normal w-full outline-none"
-                                placeholder="Write better answer option" name="answer[]">
+                            <label class="font-semibold flex items-center gap-[10px]"><input type="radio"
+                                    name="correct_answer" value="{{ $i }}" {{-- name="correct_answer[{{ $i }}]" --}}
+                                    class="w-[24px] h-[24px] appearance-none checked:border-[3px] checked:border-solid checked:border-white rounded-full checked:bg-[#2B82FE] ring ring-[#EEEEEE]" />
+                                Correct
+                            </label>
                         </div>
-                        <label class="font-semibold flex items-center gap-[10px]"><input type="radio"
-                                name="correct_answer"
-                                value="{{ $i }}"
-                                {{-- name="correct_answer[{{ $i }}]" --}}
-                                class="w-[24px] h-[24px] appearance-none checked:border-[3px] checked:border-solid checked:border-white rounded-full checked:bg-[#2B82FE] ring ring-[#EEEEEE]" />
-                            Correct
-                        </label>
-                    </div>
                     @endfor
                 </div>
-                <button type="submit" class="w-[500px] h-[52px] p-[14px_20px] bg-[#6436F1] rounded-full font-bold text-white transition-all duration-300 hover:shadow-[0_4px_15px_0_#6436F14D] text-center">
+                <button type="submit"
+                    class="w-[500px] h-[52px] p-[14px_20px] bg-[#6436F1] rounded-full font-bold text-white transition-all duration-300 hover:shadow-[0_4px_15px_0_#6436F14D] text-center">
                     Save Question
                 </button>
             </form>

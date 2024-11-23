@@ -4,7 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use App\Models\CourseStudent;
+use App\Models\User;
+// use Dotenv\Exception\ValidationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+use Illuminate\Validation\ValidationException;
 
 class CourseStudentController extends Controller
 {
@@ -29,10 +34,44 @@ class CourseStudentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, Course $course)
     {
-        //
+        $request->validate([
+            'email' => 'required|string',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            throw ValidationException::withMessages([
+                'system_error' => ['Student email not found!'],
+            ]);
+        }
+
+        // $isEndroled = $course->students()->where('user_id', $user->id)->exists();
+        // cara langsung
+        if ($course->students()->where('user_id', $user->id)->exists()) {
+            throw ValidationException::withMessages([
+                'system_error' => ['Student already has access!'],
+            ]);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $course->students()->attach($user->id);
+            DB::commit();
+
+            return "Student added successfully!";
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            throw ValidationException::withMessages([
+                'system_error' => [$e->getMessage()],
+            ]);
+        }
     }
+
 
     /**
      * Display the specified resource.
