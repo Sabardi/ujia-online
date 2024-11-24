@@ -71,9 +71,14 @@ class LearningController extends Controller
 
         $correctAnswersCount = $studentAnswers->where('answer', 'correct')->count();
 
-        // $passPercentage = ($correctAnswersCount / $totalQuestions) * 100;
-        $passPercentage = $correctAnswersCount == $totalQuestions;
+        $passPercentage = ($correctAnswersCount / $totalQuestions) * 100;
+        // $passPercentage = $correctAnswersCount == $totalQuestions;
 
         return view('student.courses.learning_raport', compact('course', 'passPercentage', 'studentAnswers', 'totalQuestions', 'correctAnswersCount'));
+    }
+
+    public function learning_finished(Course $course)
+    {
+        return view('student.courses.learning_finished', compact('course'));
     }
 }

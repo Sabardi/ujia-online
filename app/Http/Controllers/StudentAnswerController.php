@@ -79,7 +79,7 @@ class StudentAnswerController extends Controller
                 // route('dashboard.learning.course', ['course' => $course->id, 'question' => $course->nextQuestionId])                
                 return redirect()->route('dashboard.learning.course', ['course' => $course->id, $nextQuestion->id]);
             } else {
-                return "done";
+                // return "done";
                 return redirect()->route('dashboard.learning.finished.course', $course->id);
             }
 

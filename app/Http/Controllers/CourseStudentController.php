@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use App\Models\CourseStudent;
+use App\Models\StudentAnswer;
 use App\Models\User;
 // use Dotenv\Exception\ValidationException;
 use Illuminate\Http\Request;
@@ -16,10 +17,42 @@ class CourseStudentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Course $course)
     {
-        //
+        $students = $course->students()->orderBy('id', 'DESC')->get();
+
+        // return $students;
+        $questions = $course->questions()->orderBy('id', 'DESC')->get();
+        // return $questions;
+        $totalQuestions = $questions->count();
+
+        foreach ($students as $student) {
+            $studentAnswers = StudentAnswer::whereHas('question', function ($query) use ($course) {
+                $query->where('course_id', $course->id);
+            })->where('user_id', $student->id)
+            ->get();
+
+            $answerCount = $studentAnswers->count();
+                        
+            $correctAnswerCount = $studentAnswers->where('answer', 'correct')->count();
+
+            // return $studentAnswers . '<br>' . $answerCount . '<br>' . $correctAnswerCount;
+
+            if ($answerCount == 0) {
+                $student->status = 'Not Started';
+            } elseif ($correctAnswerCount < $totalQuestions) {
+                $student->status = 'Not Passed';
+            } elseif ($correctAnswerCount == $totalQuestions) {
+                $student->status = 'Passed';
+            }
+        }
+
+        // return $students;
+
+        return view('admin.students.index', compact('course', 'questions', 'students'));
     }
+
+
 
     /**
      * Show the form for creating a new resource.
@@ -56,13 +89,19 @@ class CourseStudentController extends Controller
             ]);
         }
 
+        if ($user->hasRole('teacher')) {
+            throw ValidationException::withMessages([
+                'system_error' => ['User is not a student!'],
+            ]);
+        }    
+
         DB::beginTransaction();
 
         try {
             $course->students()->attach($user->id);
             DB::commit();
 
-            return "Student added successfully!";
+            return redirect()->route('dashboard.course.course.student.index', $course)->with('success', 'Student added successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
 
