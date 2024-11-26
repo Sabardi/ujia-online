@@ -10,10 +10,6 @@ use App\Models\Course;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
-});
-
-Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -41,7 +37,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/Course/student/show/{course}', [CourseStudentController::class, 'index'])
             ->middleware('role:teacher')
             ->name('course.course.student.index');
-
+            
         Route::get('/Course/student/create/{course}', [CourseStudentController::class, 'create'])
             ->middleware('role:teacher')
             ->name('course.course.student.create');
